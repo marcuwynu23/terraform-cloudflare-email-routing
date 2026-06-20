@@ -7,6 +7,14 @@ locals {
   ]
 }
 
+# Destination Addresses (Terraform adds them, Cloudflare sends verification emails)
+resource "cloudflare_email_routing_address" "this" {
+  for_each = var.email_routing_enabled ? toset(var.destination_addresses) : toset([])
+
+  account_id = var.account_id
+  email      = each.value
+}
+
 # Alias Rules
 resource "cloudflare_email_routing_rule" "aliases" {
   for_each = var.email_routing_enabled ? var.email_aliases : {}
@@ -26,6 +34,8 @@ resource "cloudflare_email_routing_rule" "aliases" {
     type  = "forward"
     value = each.value
   }
+
+  depends_on = [cloudflare_email_routing_address.this]
 }
 
 # Catch-All Rule (implemented as a regular rule)
@@ -45,6 +55,8 @@ resource "cloudflare_email_routing_rule" "catch_all" {
     type  = "forward"
     value = [var.catch_all.destination]
   }
+
+  depends_on = [cloudflare_email_routing_address.this]
 }
 
 # Custom Rules
@@ -72,6 +84,8 @@ resource "cloudflare_email_routing_rule" "this" {
       value = action.value.values
     }
   }
+
+  depends_on = [cloudflare_email_routing_address.this]
 }
 
 # DNS Records for Email Routing (only set manage_dns_records = true if Email Routing is not yet enabled)
