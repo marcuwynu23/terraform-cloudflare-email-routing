@@ -1,0 +1,58 @@
+# Use either:
+# - API Token (recommended for security, but sometimes has permission issues)
+# - Global API Key + Email (more reliable)
+
+# Option 1: API Token
+# cloudflare_api_token = "your-cloudflare-api-token"
+
+# Option 2: Global API Key + Email
+cloudflare_api_email = "your-cloudflare-account-email@example.com"
+cloudflare_api_key   = "your-global-api-key"
+
+# Cloudflare Zone ID (find in your domain's Cloudflare Dashboard → Overview → API section)
+zone_id = "your-zone-id"
+
+# Enable or disable Cloudflare Email Routing for the zone (usually leave as true)
+email_routing_enabled = true
+
+# Custom email aliases — map your custom addresses to your verified destination addresses
+email_aliases = {
+  "contact@yourdomain.com"  = ["hello@example.com"],
+  "support@yourdomain.com"  = ["hello@example.com", "admin@example.com"]
+}
+
+# Catch-all rule — forward all emails not matching any alias or custom rule
+catch_all = {
+  enabled     = false                 # Set to true to enable catch-all
+  destination = "admin@example.com"    # Where to forward catch-all emails
+}
+
+# Custom rules — use this for more complex routing logic (regex, multiple matchers, etc.)
+# For simple aliases, use the `email_aliases` variable above instead!
+custom_rules = [
+  # Example custom rule:
+  {
+    name     = "forward-marketing"
+    priority = 0
+    matchers = [
+      {
+        type  = "literal"
+        field = "to"
+        value = "marketing@example.com"
+      }
+    ]
+    actions = [
+      {
+        type   = "forward"
+        values = ["hello@example.com"]
+      }
+    ]
+  }
+]
+
+# Manage DNS records (MX, SPF) — only set this to true if Email Routing is not yet enabled on your zone!
+# If you've already enabled Email Routing in Cloudflare Dashboard, leave this as false
+manage_dns_records = false
+
+# Add SPF TXT record — set to false if you already have an existing SPF record you want to keep
+add_spf_record = true
