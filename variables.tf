@@ -18,6 +18,11 @@ variable "cloudflare_api_key" {
   default     = null
 }
 
+variable "account_id" {
+  description = "Cloudflare account ID (required for destination addresses)."
+  type        = string
+}
+
 variable "zone_id" {
   description = "Cloudflare zone ID."
   type        = string
@@ -27,6 +32,12 @@ variable "email_routing_enabled" {
   description = "Enable Cloudflare Email Routing for the zone."
   type        = bool
   default     = true
+}
+
+variable "destination_addresses" {
+  description = "List of destination email addresses (Terraform will add them and send verification emails)."
+  type        = list(string)
+  default     = []
 }
 
 variable "catch_all" {
