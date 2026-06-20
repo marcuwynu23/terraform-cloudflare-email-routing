@@ -97,7 +97,7 @@ resource "cloudflare_record" "mx" {
   type     = "MX"
   content  = each.value.server
   priority = each.value.priority
-  ttl     = 1
+  ttl      = 1
 }
 
 # SPF Record (optional)
