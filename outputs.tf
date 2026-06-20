@@ -1,3 +1,8 @@
+output "destination_addresses" {
+  description = "Destination email addresses added to Cloudflare"
+  value       = [for addr in cloudflare_email_routing_address.this : addr.email]
+}
+
 output "email_aliases" {
   description = "Created email aliases"
   value       = { for k, v in cloudflare_email_routing_rule.aliases : k => tolist(v.action)[0].value }
