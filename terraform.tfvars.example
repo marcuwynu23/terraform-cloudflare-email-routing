@@ -9,11 +9,20 @@
 cloudflare_api_email = "your-cloudflare-account-email@example.com"
 cloudflare_api_key   = "your-global-api-key"
 
+# Cloudflare Account ID (find in your Cloudflare Dashboard → main page → Account ID)
+account_id = "your-account-id"
+
 # Cloudflare Zone ID (find in your domain's Cloudflare Dashboard → Overview → API section)
 zone_id = "your-zone-id"
 
 # Enable or disable Cloudflare Email Routing for the zone (usually leave as true)
 email_routing_enabled = true
+
+# Destination email addresses (Terraform adds them to Cloudflare, which sends verification emails)
+destination_addresses = [
+  "hello@example.com",
+  "admin@example.com"
+]
 
 # Custom email aliases — map your custom addresses to your verified destination addresses
 email_aliases = {
