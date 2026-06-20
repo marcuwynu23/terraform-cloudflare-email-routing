@@ -126,8 +126,10 @@ Each destination address will receive a verification email. You must click the l
 | `cloudflare_api_token` | Cloudflare API token (recommended for security) | `string` | no | `null` |
 | `cloudflare_api_email` | Cloudflare account email (required if using `cloudflare_api_key`) | `string` | no | `null` |
 | `cloudflare_api_key` | Cloudflare Global API Key (more reliable if API token has issues) | `string` | no | `null` |
+| `account_id` | Cloudflare account ID (required for destination addresses) | `string` | yes | — |
 | `zone_id` | Cloudflare zone ID | `string` | yes | — |
 | `email_routing_enabled` | Enable Cloudflare Email Routing for the zone | `bool` | no | `true` |
+| `destination_addresses` | List of destination email addresses (Terraform adds them, Cloudflare sends verification emails) | `list(string)` | no | `[]` |
 | `email_aliases` | Map of custom email aliases (e.g., contact@yourdomain.com) to destination addresses | `map(list(string))` | no | `{}` |
 | `catch_all` | Catch-all email routing rule configuration | `object` | no | `{}` |
 | `custom_rules` | List of custom email routing rules with matchers and actions | `list(object)` | no | `[]` |
@@ -162,6 +164,7 @@ Each destination address will receive a verification email. You must click the l
 
 | Output | Description |
 |--------|-------------|
+| `destination_addresses` | Destination email addresses added to Cloudflare |
 | `email_aliases` | Created email aliases and their destination addresses |
 | `custom_rule_ids` | IDs of created custom email routing rules |
 | `catch_all_rule_id` | ID of catch-all email routing rule (if created) |
