@@ -70,7 +70,8 @@ Edit `terraform.tfvars`:
 cloudflare_api_email = "your-cloudflare-account-email@example.com"
 cloudflare_api_key   = "your-global-api-key"
 
-zone_id = "your-zone-id"
+zone_id     = "your-zone-id"
+account_id  = "your-account-id"
 
 email_aliases = {
   "contact@yourdomain.com"  = ["hello@example.com"],
@@ -121,23 +122,7 @@ Each destination address will receive a verification email. You must click the l
 
 ## Usage as a Module
 
-You can use this project as a module from the [Terraform Registry](https://registry.terraform.io/):
-
-```hcl
-module "email_routing" {
-  source = "terraform-cloudflare-email-routing"
-
-  cloudflare_api_token = var.cloudflare_api_token
-  zone_id              = var.zone_id
-  account_id           = var.account_id
-
-  email_aliases = {
-    "contact@yourdomain.com" = ["hello@example.com"]
-  }
-}
-```
-
-Or reference it directly from GitHub:
+Reference this repository as a Terraform module:
 
 ```hcl
 module "email_routing" {
