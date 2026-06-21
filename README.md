@@ -2,8 +2,6 @@
 
 This Terraform project provisions **Cloudflare Email Routing** with complete configuration: custom email aliases, catch-all, custom rules, and optional **DNS records** (MX, SPF).
 
----
-
 ## What is Cloudflare Email Routing?
 
 Cloudflare Email Routing is a free email forwarding service that lets you create custom email addresses at your domain and forward them to your existing inbox (Gmail, Outlook, etc.) without hosting your own mail server.
@@ -15,15 +13,11 @@ Key features:
 - **Automatic DNS management** — MX and SPF records are created for you (optional)
 - **Privacy** — your real inbox address stays hidden behind your domain
 
----
-
 ## Prerequisites
 
 - **Terraform** >= 1.5 — [install](https://developer.hashicorp.com/terraform/downloads)
 - **Cloudflare account** — [sign up](https://dash.cloudflare.com/)
 - **Domain on Cloudflare** — your domain must use Cloudflare's nameservers
-
----
 
 ## Setup Guide
 
@@ -118,8 +112,6 @@ terraform apply
 
 Each destination address will receive a verification email. You must click the link before email is forwarded. Check your inbox and confirm each address.
 
----
-
 ## Usage as a Module
 
 Reference this repository as a Terraform module:
@@ -138,9 +130,7 @@ module "email_routing" {
 }
 ```
 
-All [variables](#variables) and [outputs](#outputs) documented below are available when using it as a module.
-
----
+All variables and outputs documented below are available when using it as a module.
 
 ## Variables
 
@@ -181,8 +171,6 @@ All [variables](#variables) and [outputs](#outputs) documented below are availab
 }
 ```
 
----
-
 ## Outputs
 
 | Output | Description |
@@ -192,8 +180,6 @@ All [variables](#variables) and [outputs](#outputs) documented below are availab
 | `custom_rule_ids` | IDs of created custom email routing rules |
 | `catch_all_rule_id` | ID of catch-all email routing rule (if created) |
 | `spf_record` | SPF TXT record for Cloudflare Email Routing (if created) |
-
----
 
 ## Important Notes
 
