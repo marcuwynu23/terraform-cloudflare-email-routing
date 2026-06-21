@@ -119,6 +119,44 @@ Each destination address will receive a verification email. You must click the l
 
 ---
 
+## Usage as a Module
+
+You can use this project as a module from the [Terraform Registry](https://registry.terraform.io/):
+
+```hcl
+module "email_routing" {
+  source = "terraform-cloudflare-email-routing"
+
+  cloudflare_api_token = var.cloudflare_api_token
+  zone_id              = var.zone_id
+  account_id           = var.account_id
+
+  email_aliases = {
+    "contact@yourdomain.com" = ["hello@example.com"]
+  }
+}
+```
+
+Or reference it directly from GitHub:
+
+```hcl
+module "email_routing" {
+  source = "github.com/marcuwynu23/terraform-cloudflare-email-routing?ref=main"
+
+  cloudflare_api_token = var.cloudflare_api_token
+  zone_id              = var.zone_id
+  account_id           = var.account_id
+
+  email_aliases = {
+    "contact@yourdomain.com" = ["hello@example.com"]
+  }
+}
+```
+
+All [variables](#variables) and [outputs](#outputs) documented below are available when using it as a module.
+
+---
+
 ## Variables
 
 | Variable | Description | Type | Required | Default |
