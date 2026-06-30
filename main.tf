@@ -24,16 +24,16 @@ resource "cloudflare_email_routing_rule" "aliases" {
   enabled  = true
   priority = 10
 
-  matcher {
+  matchers = [{
     type  = "literal"
     field = "to"
     value = each.key
-  }
+  }]
 
-  action {
+  actions = [{
     type  = "forward"
     value = each.value
-  }
+  }]
 
   depends_on = [cloudflare_email_routing_address.this]
 }
@@ -47,14 +47,14 @@ resource "cloudflare_email_routing_rule" "catch_all" {
   enabled  = var.catch_all.enabled
   priority = 100
 
-  matcher {
+  matchers = [{
     type = "all"
-  }
+  }]
 
-  action {
+  actions = [{
     type  = "forward"
     value = [var.catch_all.destination]
-  }
+  }]
 
   depends_on = [cloudflare_email_routing_address.this]
 }
@@ -68,28 +68,18 @@ resource "cloudflare_email_routing_rule" "this" {
   priority = each.value.priority
   enabled  = true
 
-  dynamic "matcher" {
-    for_each = each.value.matchers
-    content {
-      type  = matcher.value.type
-      field = lookup(matcher.value, "field", null)
-      value = lookup(matcher.value, "value", null)
-    }
-  }
+  matchers = each.value.matchers
 
-  dynamic "action" {
-    for_each = each.value.actions
-    content {
-      type  = action.value.type
-      value = action.value.values
-    }
-  }
+  actions = [for a in each.value.actions : {
+    type  = a.type
+    value = a.values
+  }]
 
   depends_on = [cloudflare_email_routing_address.this]
 }
 
 # DNS Records for Email Routing (only set manage_dns_records = true if Email Routing is not yet enabled)
-resource "cloudflare_record" "mx" {
+resource "cloudflare_dns_record" "mx" {
   for_each = var.email_routing_enabled && var.manage_dns_records ? { for idx, mx in local.mx_servers : idx => mx } : {}
 
   zone_id  = var.zone_id
@@ -101,13 +91,12 @@ resource "cloudflare_record" "mx" {
 }
 
 # SPF Record (optional)
-resource "cloudflare_record" "spf" {
+resource "cloudflare_dns_record" "spf" {
   count = var.email_routing_enabled && var.add_spf_record ? 1 : 0
 
   zone_id         = var.zone_id
   name            = "@"
   type            = "TXT"
-  content         = "v=spf1 include:_spf.mx.cloudflare.net ~all"
-  ttl             = 1
-  allow_overwrite = true
+  content = "v=spf1 include:_spf.mx.cloudflare.net ~all"
+  ttl     = 1
 }
