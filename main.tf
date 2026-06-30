@@ -94,9 +94,9 @@ resource "cloudflare_dns_record" "mx" {
 resource "cloudflare_dns_record" "spf" {
   count = var.email_routing_enabled && var.add_spf_record ? 1 : 0
 
-  zone_id         = var.zone_id
-  name            = "@"
-  type            = "TXT"
+  zone_id = var.zone_id
+  name    = "@"
+  type    = "TXT"
   content = "v=spf1 include:_spf.mx.cloudflare.net ~all"
   ttl     = 1
 }
