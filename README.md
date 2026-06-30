@@ -198,6 +198,15 @@ All variables and outputs documented below are available when using it as a modu
 | `catch_all_rule_id` | ID of catch-all email routing rule (if created) |
 | `spf_record` | SPF TXT record for Cloudflare Email Routing (if created) |
 
+## Resources Created
+
+- `cloudflare_email_routing_address.this` – Destination email addresses for email forwarding
+- `cloudflare_email_routing_rule.aliases` – Custom email alias routing rules
+- `cloudflare_email_routing_rule.catch_all` – Catch-all email routing rule
+- `cloudflare_email_routing_rule.this` – Custom email routing rules with matchers and actions
+- `cloudflare_record.mx` – MX DNS records for email routing (optional)
+- `cloudflare_record.spf` – SPF TXT record (optional)
+
 ## Important Notes
 
 - **Address verification** — destination addresses must be manually verified in the Cloudflare Dashboard first (go to Email → Email Routing → Destination Addresses)
@@ -205,4 +214,52 @@ All variables and outputs documented below are available when using it as a modu
 - **Catch-all + custom rules** — rules are evaluated by priority. The catch-all is set to priority 100 to catch everything unmatched.
 - **Rule ordering** — `priority` determines evaluation order (0 = first). Higher numbers run later.
 - **Authentication** — use `cloudflare_api_key` + `cloudflare_api_email` if you run into permission errors with API tokens
+## CI/CD Setup (GitHub Actions)
+
+### Prerequisites
+1. **Create a GCS bucket** for Terraform remote state:
+    ```bash
+    gcloud storage buckets create gs://your-terraform-state-bucket \
+      --location=us-central1 \
+      --uniform-bucket-level-access
+    ```
+
+2. **Create a service account** with necessary permissions and generate a JSON key:
+    - GCP Console → IAM & Admin → Service Accounts → Create Service Account
+    - Grant the required roles for this module
+    - Keys → Add Key → Create New Key → JSON
+    - Copy the entire JSON file contents
+
+3. **Add GitHub secrets**:
+
+    | Secret Name | Value |
+    |---|---|
+    | `GCP_SA_KEY` | Full JSON key from step 2 |
+    | `TF_BUCKET_NAME` | Your GCS bucket name |
+    | `TF_BUCKET_PREFIX` | Bucket prefix/path (e.g., `cloudflare-email-routing`) |
+
+4. **Run the workflow**:
+    - **Apply**: Go to Actions → **CD - Cloudflare Email Routing (Apply)** → fill in all inputs
+    - **Destroy**: Go to Actions → **CD - Cloudflare Email Routing (Destroy)** → fill in essential inputs
+
+> Alternatively, create a `backend.tfvars` from `backend.tfvars.example` and run `terraform init -backend-config="backend.tfvars"` for local use.
+
+## Remote State (GCS Backend)
+
+This module uses Google Cloud Storage (GCS) as the Terraform backend for remote state management:
+
+```hcl
+terraform {
+  backend "gcs" {
+    bucket = "your-terraform-state-bucket"
+    prefix = "cloudflare-email-routing"
+  }
+}
+```
+
+Create a `backend.tfvars` file based on `backend.tfvars.example` and initialize:
+
+```bash
+terraform init -backend-config="backend.tfvars"
+```
 
