@@ -1,0 +1,123 @@
+name: CD - Cloudflare Email Routing (Destroy)
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      project_id:
+        description: GCP project ID
+        required: true
+        type: string
+
+      region:
+        description: "GCP region (Free Tier: us-west1, us-central1, us-east1)"
+        required: true
+        type: string
+        default: us-central1
+
+      cloudflare_api_email:
+        description: Cloudflare account email
+        required: false
+        type: string
+
+      account_id:
+        description: Cloudflare Account ID
+        required: true
+        type: string
+
+      zone_id:
+        description: Cloudflare Zone ID
+        required: true
+        type: string
+
+      email_routing_enabled:
+        description: email routing enabled
+        required: true
+        type: string
+
+      destination_addresses:
+        description: destination addresses
+        required: true
+        type: string
+
+      email_aliases:
+        description: email aliases
+        required: true
+        type: string
+
+      catch_all:
+        description: catch all
+        required: true
+        type: string
+
+      custom_rules:
+        description: custom rules
+        required: true
+        type: string
+
+      manage_dns_records:
+        description: manage dns records
+        required: true
+        type: string
+
+      add_spf_record:
+        description: add spf record
+        required: true
+        type: string
+
+env:
+  TF_BUCKET_NAME: ${{ secrets.TF_BUCKET_NAME }}
+  TF_BUCKET_PREFIX: ${{ secrets.TF_BUCKET_PREFIX }}
+  TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  TF_VAR_cloudflare_api_key: ${{ secrets.CLOUDFLARE_API_KEY }}
+  TF_VAR_cloudflare_api_email: ${{ secrets.CLOUDFLARE_API_EMAIL }}
+jobs:
+  destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: latest
+    - name: Terraform Init
+      run: |
+        terraform init \
+          -backend-config="bucket=$TF_BUCKET_NAME" \
+          -backend-config="prefix=$TF_BUCKET_PREFIX"
+    - name: Terraform Plan
+      run: |
+        terraform plan -destroy  \
+          -var="project_id=${{ github.event.inputs.project_id }}" \
+          -var="region=${{ github.event.inputs.region }}" \
+          -var="cloudflare_api_email=${{ github.event.inputs.cloudflare_api_email }}" \
+          -var="account_id=${{ github.event.inputs.account_id }}" \
+          -var="zone_id=${{ github.event.inputs.zone_id }}" \
+          -var="email_routing_enabled=${{ github.event.inputs.email_routing_enabled }}" \
+          -var="destination_addresses=${{ github.event.inputs.destination_addresses }}" \
+          -var="email_aliases=${{ github.event.inputs.email_aliases }}" \
+          -var="catch_all=${{ github.event.inputs.catch_all }}" \
+          -var="custom_rules=${{ github.event.inputs.custom_rules }}" \
+          -var="manage_dns_records=${{ github.event.inputs.manage_dns_records }}" \
+          -var="add_spf_record=${{ github.event.inputs.add_spf_record }}"
+    - name: Terraform Destroy
+      run: |
+        terraform destroy -auto-approve  \
+          -var="project_id=${{ github.event.inputs.project_id }}" \
+          -var="region=${{ github.event.inputs.region }}" \
+          -var="cloudflare_api_email=${{ github.event.inputs.cloudflare_api_email }}" \
+          -var="account_id=${{ github.event.inputs.account_id }}" \
+          -var="zone_id=${{ github.event.inputs.zone_id }}" \
+          -var="email_routing_enabled=${{ github.event.inputs.email_routing_enabled }}" \
+          -var="destination_addresses=${{ github.event.inputs.destination_addresses }}" \
+          -var="email_aliases=${{ github.event.inputs.email_aliases }}" \
+          -var="catch_all=${{ github.event.inputs.catch_all }}" \
+          -var="custom_rules=${{ github.event.inputs.custom_rules }}" \
+          -var="manage_dns_records=${{ github.event.inputs.manage_dns_records }}" \
+          -var="add_spf_record=${{ github.event.inputs.add_spf_record }}"
