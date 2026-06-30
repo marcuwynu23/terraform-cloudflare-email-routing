@@ -5,7 +5,7 @@ output "destination_addresses" {
 
 output "email_aliases" {
   description = "Created email aliases"
-  value       = { for k, v in cloudflare_email_routing_rule.aliases : k => tolist(v.action)[0].value }
+  value       = { for k, v in cloudflare_email_routing_rule.aliases : k => v.actions[0].value }
 }
 
 output "custom_rule_ids" {
@@ -20,5 +20,5 @@ output "catch_all_rule_id" {
 
 output "spf_record" {
   description = "SPF TXT record for Cloudflare Email Routing"
-  value       = var.add_spf_record && length(cloudflare_record.spf) > 0 ? cloudflare_record.spf[0].content : null
+  value       = var.add_spf_record && length(cloudflare_dns_record.spf) > 0 ? cloudflare_dns_record.spf[0].content : null
 }
